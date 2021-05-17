@@ -10,7 +10,8 @@ from ZeepyForServerHelper import zeepy_for_server_helper
 from datetime import datetime
 import os
 import json
-import datetime
+import time
+from datetime import datetime
 
 def upload_json_data_in_one_directory(directory, filename):
     zeepy = zeepy_for_server_helper()
@@ -47,7 +48,7 @@ def upload_json_data_in_one_directory(directory, filename):
 
         if 'latitude' not in json_data or 'longitude' not in json_data:
             continue
-        
+
         latitude = float(json_data['latitude'])
         longitude = float(json_data['longitude'])
 
@@ -55,7 +56,7 @@ def upload_json_data_in_one_directory(directory, filename):
         deal_month = int(json_data['deal_month'])
         deal_day = int(json_data['deal_day'])
 
-        deal_date = f"{deal_year}-{deal_month}-{deal_day}"
+        deal_date = int(time.mktime(datetime.strptime(f"{deal_year}-{deal_month}-{deal_day}", '%Y-%m-%d').timetuple())) * 1000
         floor = int(json_data['floor'])
         monthly_rent = int(json_data['monthly_rent'])
         deposit = int(json_data['deposit'].replace(",", ""))
@@ -74,15 +75,29 @@ def upload_json_data_in_one_directory(directory, filename):
             'longitude' : longitude,
         }
 
+        response_upload = zeepy.upload_building(building_data)
+        split_location = response_upload.headers['Location'].split("/")
+        response_upload.close()
+
         building_deal_data = {
+            'buildingId' : int(split_location[2]),
             'dealDate' : deal_date,
             'deposit' : deposit,
             'monthlyRent' : monthly_rent,
             'floor' : floor
         }
 
-        zeepy.update_building(building_data)
-        zeepy.update_building_deal(building_deal_data)
+        response_get = zeepy.get_building_deal(int(split_location[2]), floor)
+
+        if response_get.status_code == 500:
+            response_last = zeepy.upload_building_deal(building_deal_data)
+            response_last.close()
+        else:
+            _id = json.loads(response_get.content)["id"]
+            response_last = zeepy.update_building_deal(building_deal_data, _id)
+            response_last.close()
+
+        response_get.close()
         
 
 def upload_all_in_directory_json_data():
@@ -93,6 +108,7 @@ def upload_all_in_directory_json_data():
 
         for molit_json_name in molit_jsons_name:
             upload_json_data_in_one_directory(directory, molit_json_name)
+            time.sleep(5) # Socker Problem occured so, please use timer
 
 def main(): # 매인 함수
     upload_all_in_directory_json_data()
