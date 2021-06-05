@@ -123,6 +123,7 @@ class xml_parse_helper:
 
     def parse_molit_api_alliance_xml(self, response):
     # 국토교통부_연립다세대 전월세 자료 XML 데이터 파싱 함수
+        # print(response)
         xtree = ET.fromstring(response)
         rows = []
         for node in xtree.iter("item"):

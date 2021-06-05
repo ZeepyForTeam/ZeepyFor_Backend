@@ -1,10 +1,10 @@
  #-*- coding: utf-8 -*- 
 
-from MolitApi import molit_api # MOLIT API 클래스
+from helper.MolitApi import molit_api # MOLIT API 클래스
 from Scheduler import scheduler # 스케줄러 클래스
-from XmlParserHelper import xml_parse_helper # XML 파싱 클래스
-from AreaCodeHelper import area_code_helper # 지역코드 제작 클래스
-from GeocoderApi import geocoder_api # GEOCODER API 클래스
+from helper.XmlParserHelper import xml_parse_helper # XML 파싱 클래스
+from helper.AreaCodeHelper import area_code_helper # 지역코드 제작 클래스
+from helper.GeocoderApi import geocoder_api # GEOCODER API 클래스
 
 from datetime import datetime
 import os
@@ -30,7 +30,7 @@ def make_my_date_string(my_date_year, my_date_month): # 날짜 스트링 변환 
 
 def make_file(json_data, area_code_json, my_date_string, tag): # 파일 작성 함수
     # 파일 작성
-    f = open(f"json_data/{my_date_string}/{tag}_{area_code_json['SIDO_CODE']}_{area_code_json['SIGUNGU_CODE']}_{area_code_json['ADDRESS_NAME']}.json", "w", encoding="UTF8")
+    f = open(f"json_data2/{my_date_string}/{tag}_{area_code_json['SIDO_CODE']}_{area_code_json['SIGUNGU_CODE']}_{area_code_json['ADDRESS_NAME']}.json", "w", encoding="UTF8")
     f.write(json.dumps(json_data, indent=2, ensure_ascii=False))
     f.close()
 
@@ -55,19 +55,24 @@ def save_to_file_setting_date_to_current_date_of_molit_data(): # 부동산 API �
         my_date_string= make_my_date_string(my_date_year, my_date_month)
         print(my_date_string)
 
-        if os.path.isdir(f"json_data/{my_date_string}") == False: # 디렉토리 체크
-            os.mkdir(f"json_data/{my_date_string}")
+        if os.path.isdir(f"json_data2/{my_date_string}") == False: # 디렉토리 체크
+            os.mkdir(f"json_data2/{my_date_string}")
         
         for area_code in area_code_json:
-            # 오피스텔 API CALL
-            officetels_data = molit.get_molit_api_officetels_data(area_code, my_date_string)
-            officetels_json = xml_parser.parse_molit_api_officetels_xml(officetels_data)
-            make_file(officetels_json, area_code, my_date_string, xml_parser.type[1])
+            # # 오피스텔 API CALL
+            # officetels_data = molit.get_molit_api_officetels_data(area_code, my_date_string)
+            # officetels_json = xml_parser.parse_molit_api_officetels_xml(officetels_data)
+            # make_file(officetels_json, area_code, my_date_string, xml_parser.type[1])
 
-            # 단독/다가구 API CALL
-            family_data = molit.get_molit_api_family_data(area_code, my_date_string)
-            family_json = xml_parser.parse_molit_api_family_xml(family_data)
-            make_file(family_json, area_code, my_date_string, xml_parser.type[2])
+            # # 단독/다가구 API CALL
+            # family_data = molit.get_molit_api_family_data(area_code, my_date_string)
+            # family_json = xml_parser.parse_molit_api_family_xml(family_data)
+            # make_file(family_json, area_code, my_date_string, xml_parser.type[2])
+
+            # 연립다세대 전월세 API CALL
+            alliance_data = molit.get_molit_api_alliance_data(area_code, my_date_string)
+            alliance_json = xml_parser.parse_molit_api_alliance_xml(alliance_data)
+            make_file(alliance_json, area_code, my_date_string, xml_parser.type[3])
         
         if my_date_month >= 12:
             my_date_year += 1

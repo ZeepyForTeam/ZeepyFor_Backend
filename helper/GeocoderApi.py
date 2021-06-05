@@ -2,7 +2,7 @@
 
 import requests
 from urllib import parse, request
-from Settings import settings
+from config.Settings import settings
 
 class geocoder_api:
     def __init__(self):
@@ -25,10 +25,10 @@ class geocoder_api:
 
         encode_url_params = parse.urlencode(url_params, doseq=True)
         response = requests.get(url=self.geocoder_api_url + "?" + encode_url_params)
-        
-        try :
-            result = response.json()["response"]["result"]["point"]
-            return result
-        except :
-            print(f"error: ${address}")
-            return False
+        result = {}
+        try:
+            result = response.json()
+        except:
+            result = {}
+            
+        return result

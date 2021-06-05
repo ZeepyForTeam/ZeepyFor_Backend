@@ -1,7 +1,7 @@
  #-*- coding: utf-8 -*- 
 
 from urllib import parse, request
-from Settings import settings
+from config.Settings import settings
 
 class molit_api:
     def __init__(self):
