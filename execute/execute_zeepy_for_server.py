@@ -1,12 +1,6 @@
  #-*- coding: utf-8 -*- 
 
-from helper.MolitApi import molit_api # MOLIT API 클래스
-from Scheduler import scheduler # 스케줄러 클래스
-from helper.XmlParserHelper import xml_parse_helper # XML 파싱 클래스
-from helper.AreaCodeHelper import area_code_helper # 지역코드 제작 클래스
-from helper.GeocoderApi import geocoder_api # GEOCODER API 클래스
-from helper.ZeepyForServerHelper import zeepy_for_server_helper
-
+from helper.zeepy_for_server_helper import ZeepyForServerHelper
 from datetime import datetime
 import os
 import json
@@ -14,7 +8,7 @@ import time
 from datetime import datetime
 
 def upload_json_data_in_one_directory(directory, filename):
-    zeepy = zeepy_for_server_helper()
+    zeepy = ZeepyForServerHelper()
     print(f"json_data_add_location2/{directory}/{filename}")
     f = open(f"json_data_add_location2/{directory}/{filename}", "r", encoding="UTF8")
     json_data_list = json.load(f)

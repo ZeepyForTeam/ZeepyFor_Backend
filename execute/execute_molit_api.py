@@ -1,11 +1,8 @@
  #-*- coding: utf-8 -*- 
 
-from helper.MolitApi import molit_api # MOLIT API 클래스
-from Scheduler import scheduler # 스케줄러 클래스
-from helper.XmlParserHelper import xml_parse_helper # XML 파싱 클래스
-from helper.AreaCodeHelper import area_code_helper # 지역코드 제작 클래스
-from helper.GeocoderApi import geocoder_api # GEOCODER API 클래스
-
+from helper.molit_api import MolitApi # MOLIT API 클래스
+from helper.xml_parse_helper import XmlParseHelper # XML 파싱 클래스
+from helper.area_code_helper import AreaCodeHelper # 지역코드 제작 클래스
 from datetime import datetime
 import os
 import json
@@ -35,7 +32,7 @@ def make_file(json_data, area_code_json, my_date_string, tag): # 파일 작성 �
     f.close()
 
 def make_area_code_json_to_file(): # 지역코드 json 파일 제작 함수
-    molit = molit_api() # API HELPER
+    molit = MolitApi() # API HELPER
     area_code_json = molit.get_area_code_to_json()
 
     f = open(f"area_code.json", "w", encoding="UTF8")
@@ -43,9 +40,9 @@ def make_area_code_json_to_file(): # 지역코드 json 파일 제작 함수
     f.close()
 
 def save_to_file_setting_date_to_current_date_of_molit_data(): # 부동산 API 사용 함수
-    molit = molit_api() # API HELPER
-    xml_parser = xml_parse_helper() # XML PARSER HELPER
-    area_code = area_code_helper() # AREA CODE HELPER
+    molit = MolitApi() # API HELPER
+    xml_parser = XmlParseHelper() # XML PARSER HELPER
+    area_code = AreaCodeHelper() # AREA CODE HELPER
 
     area_code_json = area_code.get_setting_area_code_from_json()
     my_date_year = 2018

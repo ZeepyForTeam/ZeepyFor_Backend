@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
 
-class settings:
+class Settings:
     @staticmethod
     def return_molit_api_key():
         return os.getenv('MOLIT_API_KEY')

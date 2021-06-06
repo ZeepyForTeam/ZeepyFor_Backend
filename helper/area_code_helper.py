@@ -3,7 +3,7 @@
 import pandas as pd
 import json
 
-class area_code_helper:
+class AreaCodeHelper:
     def __init__(self):
         # 전체 지역코드 모음 CSV
         self.area_code_filename = "area_code_data/국토교통부_등록번호용 지역코드_20191231.csv"

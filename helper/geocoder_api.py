@@ -2,12 +2,12 @@
 
 import requests
 from urllib import parse, request
-from config.Settings import settings
+from config.settings import Settings
 
-class geocoder_api:
+class GeocoderApi:
     def __init__(self):
         self.geocoder_api_url = "http://api.vworld.kr/req/address"
-        self.geocoder_api_key = settings.return_geocoder_api_key()
+        self.geocoder_api_key = Settings.return_geocoder_api_key()
      
     def get_geocoder_api_address_to_location(self, address):
         # GEOCODER API 조회 함수

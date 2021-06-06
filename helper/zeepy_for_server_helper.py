@@ -3,7 +3,7 @@
 import requests
 import json
 
-class zeepy_for_server_helper:
+class ZeepyForServerHelper:
     def __init__(self):
         self.zeepy_for_server_url = "http://localhost:8080"
 

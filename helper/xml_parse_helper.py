@@ -2,7 +2,7 @@
 
 import xml.etree.ElementTree as ET
 
-class xml_parse_helper:
+class XmlParseHelper:
     def __init__(self):
         self.type = [
             "국토교통부_아파트_전월세_자료",

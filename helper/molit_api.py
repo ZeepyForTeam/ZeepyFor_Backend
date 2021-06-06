@@ -1,12 +1,12 @@
  #-*- coding: utf-8 -*- 
 
 from urllib import parse, request
-from config.Settings import settings
+from config.settings import Settings
 
-class molit_api:
+class MolitApi:
     def __init__(self):
         # 국토교통부 API Key
-        self.molit_api_key = settings.return_molit_api_key()
+        self.molit_api_key = Settings.return_molit_api_key()
         # 국토교통부_아파트 전월세 API URL
         self.molit_api_apartment_url = "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptRent" 
         # 국토교통부_오피스텔 전월세 API URL
