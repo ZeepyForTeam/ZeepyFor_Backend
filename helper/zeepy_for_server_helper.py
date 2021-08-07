@@ -13,6 +13,18 @@ class ZeepyForServerHelper:
         response = requests.post(url, data=json.dumps(data), headers=headers)
         return response
 
+    def batch_insert_building(self, data):
+        url = self.zeepy_for_server_url + "/api/buildings/batch"
+        headers = {'Content-Type': 'application/json; charset=utf-8'}
+        response = requests.post(url, data=json.dumps(data), headers=headers)
+        return response
+
+    def batch_insert_building_deal(self, data):
+        url = self.zeepy_for_server_url + "/api/deals/batch"
+        headers = {'Content-Type': 'application/json; charset=utf-8'}
+        response = requests.post(url, data=json.dumps(data), headers=headers)
+        return response
+
     def upload_building_deal(self, data):
         url = self.zeepy_for_server_url + "/api/deals"
         headers = {'Content-Type': 'application/json; charset=utf-8'}
@@ -27,6 +39,12 @@ class ZeepyForServerHelper:
 
     def get_building(self, address):
         url = self.zeepy_for_server_url + "/api/buildings/address" + "?address=" + address 
+        headers = {'Content-Type': 'application/json; charset=utf-8'}
+        response = requests.get(url, headers=headers)
+        return response
+
+    def get_buildings(self):
+        url = self.zeepy_for_server_url + "/api/buildings/all" 
         headers = {'Content-Type': 'application/json; charset=utf-8'}
         response = requests.get(url, headers=headers)
         return response
