@@ -1,23 +1,31 @@
  #-*- coding: utf-8 -*- 
 from flask_restful import Resource, reqparse
-from service.building_service import BuildingService
+from building.service.building_service import BuildingService
 
 class Building(Resource):
     def __init__(self):
         self.building_service = BuildingService()
 
+    # 현재 저장되어 있는 빌딩 관련 정보 반환 
     def get(self):
         return self.building_service.get_all()
 
+    # 빌딩 단일 업로드
     def post(self):
-        args = self.make_post_arg()
+        args = self.__make_post_arg()
         return self.building_service.create(args)
-    
+
+    #빌딩 단일 삭제
     def delete(self):
-        args = self.make_delete_arg()
+        args = self.__make_delete_arg()
         return self.building_service.delete_by_id(args)
 
-    def make_post_arg(self):
+    '''
+    Argument Create
+    - private method
+    '''
+
+    def __make_post_arg(self):
         parser = reqparse.RequestParser()
         parser.add_argument('build_year', type=int, required=False)
         parser.add_argument('deal_year', type=int, required=True)
@@ -38,11 +46,11 @@ class Building(Resource):
         parser.add_argument('type', type=str, required=True)
         return parser.parse_args()
 
-    def make_get_arg(self):
+    def __make_get_arg(self):
         parser = reqparse.RequestParser()
         return parser.parse_args()
 
-    def make_delete_arg(self):
+    def __make_delete_arg(self):
         parser = reqparse.RequestParser()
         parser.add_argument('_id', type=str, required=True)
         return parser.parse_args()

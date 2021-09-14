@@ -1,6 +1,6 @@
  #-*- coding: utf-8 -*- 
 from flask_restful import Resource, reqparse
-from service.area_code_service import AreaCodeService
+from areacode.service.area_code_service import AreaCodeService
 
 class AreaCode(Resource):
     def __init__(self):

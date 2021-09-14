@@ -8,14 +8,31 @@ import time
 import re
 from datetime import datetime
 
+'''
+배치 인서트 방식
+- 빌딩 인서트
+- API 호출 한번
+- 배포용 용 익스큐터
+'''
+
 def upload_json_data_in_one_directory(directory, filename):
-    zeepy = ZeepyForServerHelper()
+    building_list = []
+
     print(f"json_data_add_location2/{directory}/{filename}")
+
     f = open(f"json_data_add_location2/{directory}/{filename}", "r", encoding="UTF8")
     json_data_list = json.load(f)
+    building_type = ""
 
     if "다가구" in filename:
         return
+
+    if "오피스텔" in filename:
+        building_type = "OFFICETEL"
+    elif "연립다세대" in filename:
+        building_type = "ROWHOUSE"
+    else:
+        building_type = "UNKNOWN"
     
     sie = "서울특별시"
 
@@ -109,54 +126,34 @@ def upload_json_data_in_one_directory(directory, filename):
             'areaCode' : area_code,
             'latitude' : latitude,
             'longitude' : longitude,
+            'buildingType' : building_type,
         }
 
-        response_get_building = zeepy.get_building(full_number_address)
+        building_list.append(building_data)
 
-        if response_get_building.status_code == 404:
-            response_upload = zeepy.upload_building(building_data)
-            split_location = response_upload.headers['Location'].split("/")
-            building_id = int(split_location[3])
-            response_upload.close()
-        else:
-            building_id = json.loads(response_get_building.content)["id"]
-
-        response_get_building.close()
-
-        building_deal_data = {
-            'buildingId' : building_id,
-            'dealDate' : deal_date,
-            'deposit' : deposit,
-            'monthlyRent' : monthly_rent,
-            'dealCost' : 0,
-            'floor' : floor
-        }
-
-        response_get_building_deal = zeepy.get_building_deal(building_id, floor)
-
-        if response_get_building_deal.status_code == 404:
-            response_last = zeepy.upload_building_deal(building_deal_data)
-            response_last.close()
-        else:
-            _id = json.loads(response_get_building_deal.content)["id"]
-            response_last = zeepy.update_building_deal(building_deal_data, _id)
-            response_last.close()
-
-        response_get_building_deal.close()
+    return building_list
         
 
-def upload_all_in_directory_json_data():
+def bulk_building_in_directory_json_data():
+    zeepy = ZeepyForServerHelper()
     directoies_about_molit_json = os.listdir("json_data_add_location2")
+    building_list = []
     for directory in directoies_about_molit_json:
         print(directory)
+
+        if directory == "error":
+            break
+
         molit_jsons_name = os.listdir(f"json_data_add_location2/{directory}")
 
         for molit_json_name in molit_jsons_name:
-            upload_json_data_in_one_directory(directory, molit_json_name)
-        time.sleep(5) # Socker Problem occured so, please use timer
+            building_list += upload_json_data_in_one_directory(directory, molit_json_name)
+    
+    response_batch_insert_building = zeepy.batch_insert_building(building_list)
+    response_batch_insert_building.close()
 
 def main(): # 매인 함수
-    upload_all_in_directory_json_data()
+    bulk_building_in_directory_json_data()
     
 if __name__ == "__main__":
 	main()

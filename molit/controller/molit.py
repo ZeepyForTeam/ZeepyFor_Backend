@@ -1,6 +1,6 @@
  #-*- coding: utf-8 -*- 
 from flask_restful import Resource, reqparse
-from service.molit_service import MolitService
+from molit.service.molit_service import MolitService
 
 class Molit(Resource):
     def __init__(self):
@@ -10,14 +10,19 @@ class Molit(Resource):
         return self.molit_service.get_jobs()
 
     def post(self):
-        args = self.make_post_arg()
+        args = self.__make_post_arg()
         return self.molit_service.create(args)
     
     def delete(self):
-        args = self.make_delete_arg()
+        args = self.__make_delete_arg()
         return self.molit_service.delete_by_id(args)
 
-    def make_post_arg(self):
+    '''
+    Argument Create
+    - private method
+    '''
+
+    def __make_post_arg(self):
         parser = reqparse.RequestParser()
         parser.add_argument('start_year', type=int, required=True) 
         parser.add_argument('start_month', type=int, required=True) 
@@ -30,11 +35,11 @@ class Molit(Resource):
         parser.add_argument('alliance', type=bool, required=False) ## 연립다세대 전월세 잡 여부
         return parser.parse_args()
 
-    def make_get_arg(self):
+    def __make_get_arg(self):
         parser = reqparse.RequestParser()
         return parser.parse_args()
 
-    def make_delete_arg(self):
+    def __make_delete_arg(self):
         parser = reqparse.RequestParser()
         parser.add_argument('job_id', type=str, required=True)
         return parser.parse_args()

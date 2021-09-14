@@ -8,6 +8,14 @@ import time
 import re
 from datetime import datetime
 
+'''
+배치 인서트 방식
+- 빌딩 거래 내역 인서트
+- API 호출 한번
+- 배포용 용 익스큐터
+- 주의 무조건 빌딩 배치 익스큐터 사전에 실행 후 사용할 것
+'''
+
 def make_buidings_dict():
     result = {}
     zeepy = ZeepyForServerHelper()
@@ -24,9 +32,17 @@ def upload_json_data_in_one_directory(directory, filename, building_dict):
 
     f = open(f"json_data_add_location2/{directory}/{filename}", "r", encoding="UTF8")
     json_data_list = json.load(f)
+    building_type = ""
 
     if "다가구" in filename:
         return
+
+    if "오피스텔" in filename:
+        building_type = "OFFICETEL"
+    elif "연립다세대" in filename:
+        building_type = "ROWHOUSE"
+    else:
+        building_type = "UNKNOWN"
     
     sie = "서울특별시"
 
@@ -121,6 +137,7 @@ def upload_json_data_in_one_directory(directory, filename, building_dict):
             'areaCode' : area_code,
             'latitude' : latitude,
             'longitude' : longitude,
+            'buildingType' : building_type,
             'dealDate' : deal_date,
             'deposit' : deposit,
             'monthlyRent' : monthly_rent,
