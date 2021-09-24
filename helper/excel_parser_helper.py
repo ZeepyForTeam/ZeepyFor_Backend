@@ -1,4 +1,5 @@
- #-*- coding: utf-8 -*- 
+ #-*- coding: utf-8 -*-
+from domain.review import Review 
 from enum import Enum
 import sys # System
 import pandas as pd
@@ -13,8 +14,9 @@ class Mode(Enum):
 class ExcelParseHelper:
     def __init__(self):
         self.mode = Mode.CSV
-        self.file = "json-data/1차 (서대문구, 마포구).csv"
+        self.file = "json_data/1차 (서대문구, 마포구)3.csv"
         self.sheet = ""
+        self.review = Review()
 
     def __str__(self):
         return "excel_parser_helper"
@@ -70,22 +72,25 @@ class ExcelParseHelper:
 
         for i in range(1, len(result)):
             shell = result[i]
-
+            # print(shell)
             nickname = shell[0]
             building_name = shell[1]
             address = shell[2]
-            communcationTendency = shell[3]
-            lessorGender = shell[4]
-            lessorAge = shell[5]
+            communcationTendency = self.review.communicationTendency[shell[3]] 
+            lessorGender = self.review.lessorGender[shell[4]] 
+            lessorAge = self.review.lessorAge[shell[5]] 
             lessorReview = shell[6]
-            roomCount = shell[7]
-            soundInsulation = shell[8]
-            pest = shell[9]
-            lightning = shell[10]
-            waterPressure = shell[11]
+            roomCount = self.review.roomCount[shell[7]] 
+            soundInsulation = self.review.soundInsulation[shell[8]] 
+            pest = self.review.pest[shell[9]] 
+            lightning = self.review.lightning[shell[10]] 
+            waterPressure = self.review.waterPressure[shell[11]] 
             furnitures = shell[12]
+            furnitures = furnitures.replace(" ", "")
+            furnitures = furnitures.split(",")
+            furnitures = self.review.return_furniture_list(furnitures)
             review = shell[13]
-            totalEvaluation = shell[14]
+            totalEvaluation = self.review.totalEvaluation[shell[14]] 
             
             rows.append({
                 "address":address,

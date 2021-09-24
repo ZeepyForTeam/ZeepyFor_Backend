@@ -4,6 +4,7 @@ json_data/
 json_data_add_location/
 json_data2/
 json_data_add_location2/
+json_data_add_location3/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -9,31 +9,35 @@ import re
 from datetime import datetime
 
 '''
-배치 인서트 방식
-- 빌딩 인서트
-- API 호출 한번
-- 배포용 용 익스큐터
+일반 인서트 방식
+- 빌딩, 빌딩 거래 내역 인서트
+- 빌딩 한개당 한번의 API 호출
+- 선택한 위치만 조회 후 인서트
+- 테스트 용 익스큐터
 '''
 
+location = "마포구"
+
 def upload_json_data_in_one_directory(directory, filename):
-    building_list = []
-
-    print(f"json_data_add_location3/{directory}/{filename}")
-
-    f = open(f"json_data_add_location3/{directory}/{filename}", "r", encoding="UTF8")
+    zeepy = ZeepyForServerHelper()
+    print(f"json_data_add_location2/{directory}/{filename}")
+    f = open(f"json_data_add_location2/{directory}/{filename}", "r", encoding="UTF8")
     json_data_list = json.load(f)
     building_type = ""
 
-    if "다가구" in filename:
+    if location not in filename:
         return
 
+    if "다가구" in filename:
+        return
+    
     if "오피스텔" in filename:
         building_type = "OFFICETEL"
     elif "연립다세대" in filename:
         building_type = "ROWHOUSE"
     else:
         building_type = "UNKNOWN"
-    
+
     sie = "서울특별시"
 
     if "세종특별자치시" in filename: 
@@ -70,8 +74,6 @@ def upload_json_data_in_one_directory(directory, filename):
         using_area = float(json_data['using_area'])
 
         if 'latitude' not in json_data or 'longitude' not in json_data:
-            continue
-        if json_data['full_address'] == "":
             continue
 
         latitude = float(json_data['latitude'])
@@ -131,31 +133,53 @@ def upload_json_data_in_one_directory(directory, filename):
             'buildingType' : building_type,
         }
 
-        building_list.append(building_data)
+        response_get_building = zeepy.get_building(full_number_address)
+        # print(response_get_building)
 
-    return building_list
-        
+        if response_get_building.status_code == 404:
+            response_upload = zeepy.upload_building(building_data)
+            split_location = response_upload.headers['Location'].split("/")
+            building_id = int(split_location[3])
+            response_upload.close()
+        else:
+            building_id = json.loads(response_get_building.content)["id"]
 
-def bulk_building_in_directory_json_data():
-    zeepy = ZeepyForServerHelper()
-    directoies_about_molit_json = os.listdir("json_data_add_location3")
-    building_list = []
+        response_get_building.close()
+
+        building_deal_data = {
+            'buildingId' : building_id,
+            'dealDate' : deal_date,
+            'deposit' : deposit,
+            'monthlyRent' : monthly_rent,
+            'dealCost' : 0,
+            'floor' : floor
+        }
+
+        response_get_building_deal = zeepy.get_building_deal(building_id, floor)
+
+        if response_get_building_deal.status_code == 404:
+            response_last = zeepy.upload_building_deal(building_deal_data)
+            response_last.close()
+        else:
+            _id = json.loads(response_get_building_deal.content)["id"]
+            response_last = zeepy.update_building_deal(building_deal_data, _id)
+            response_last.close()
+
+        response_get_building_deal.close()
+        time.sleep(1)
+
+def upload_all_in_directory_json_data():
+    directoies_about_molit_json = os.listdir("json_data_add_location2")
     for directory in directoies_about_molit_json:
         print(directory)
-
-        if directory == "error":
-            break
-
-        molit_jsons_name = os.listdir(f"json_data_add_location3/{directory}")
+        molit_jsons_name = os.listdir(f"json_data_add_location2/{directory}")
 
         for molit_json_name in molit_jsons_name:
-            building_list += upload_json_data_in_one_directory(directory, molit_json_name)
-    
-    response_batch_insert_building = zeepy.batch_insert_building(building_list)
-    response_batch_insert_building.close()
+            upload_json_data_in_one_directory(directory, molit_json_name)
+        time.sleep(5) # Socker Problem occured so, please use timer
 
 def main(): # 매인 함수
-    bulk_building_in_directory_json_data()
+    upload_all_in_directory_json_data()
     
 if __name__ == "__main__":
 	main()

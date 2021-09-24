@@ -28,9 +28,9 @@ def make_buidings_dict():
 def upload_json_data_in_one_directory(directory, filename, building_dict):
     building_deal_list = []
 
-    print(f"json_data_add_location2/{directory}/{filename}")
+    print(f"json_data_add_location3/{directory}/{filename}")
 
-    f = open(f"json_data_add_location2/{directory}/{filename}", "r", encoding="UTF8")
+    f = open(f"json_data_add_location3/{directory}/{filename}", "r", encoding="UTF8")
     json_data_list = json.load(f)
     building_type = ""
 
@@ -80,6 +80,8 @@ def upload_json_data_in_one_directory(directory, filename, building_dict):
         using_area = float(json_data['using_area'])
 
         if 'latitude' not in json_data or 'longitude' not in json_data:
+            continue
+        if json_data['full_address'] == "":
             continue
 
         latitude = float(json_data['latitude'])
@@ -152,7 +154,7 @@ def upload_json_data_in_one_directory(directory, filename, building_dict):
 
 def bulk_building_deal_in_directory_json_data():
     zeepy = ZeepyForServerHelper()
-    directoies_about_molit_json = os.listdir("json_data_add_location2")
+    directoies_about_molit_json = os.listdir("json_data_add_location3")
     building_deal_list = []
     building_dict = make_buidings_dict()
 
@@ -162,7 +164,7 @@ def bulk_building_deal_in_directory_json_data():
         if directory == "error":
             break
 
-        molit_jsons_name = os.listdir(f"json_data_add_location2/{directory}")
+        molit_jsons_name = os.listdir(f"json_data_add_location3/{directory}")
 
         for molit_json_name in molit_jsons_name:
             building_deal_list += upload_json_data_in_one_directory(directory, molit_json_name, building_dict)

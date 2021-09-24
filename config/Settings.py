@@ -11,3 +11,7 @@ class Settings:
     @staticmethod
     def return_geocoder_api_key():
         return os.getenv('GEOCODER_API_KEY')
+    
+    @staticmethod
+    def return_kakao_api_key():
+        return os.getenv('KAKAO_API_KEY')

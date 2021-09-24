@@ -1,5 +1,6 @@
  #-*- coding: utf-8 -*- 
 from pymongo import MongoClient
+from pymongo.cursor import CursorType
 
 class AreaCodeDBHandler:
     def __init__(self):

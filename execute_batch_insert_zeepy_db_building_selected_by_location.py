@@ -15,6 +15,8 @@ from datetime import datetime
 - 배포용 용 익스큐터
 '''
 
+locations = ["마포구", "서대문구"]
+
 def upload_json_data_in_one_directory(directory, filename):
     building_list = []
 
@@ -24,8 +26,18 @@ def upload_json_data_in_one_directory(directory, filename):
     json_data_list = json.load(f)
     building_type = ""
 
+    ## 위치 선정 START
+    is_valid = False
+    for location in locations:
+        if location in filename:
+            is_valid = True
+            break
+    if is_valid == False:
+        return []
+    ## 위치 선정 END
+
     if "다가구" in filename:
-        return
+        return []
 
     if "오피스텔" in filename:
         building_type = "OFFICETEL"

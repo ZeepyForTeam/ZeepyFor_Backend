@@ -10,13 +10,25 @@ from datetime import datetime
 
 '''
 배치 인서트 방식
-- 빌딩 인서트
+- 빌딩 거래 내역 인서트
 - API 호출 한번
 - 배포용 용 익스큐터
+- 주의 무조건 빌딩 배치 익스큐터 사전에 실행 후 사용할 것
 '''
 
-def upload_json_data_in_one_directory(directory, filename):
-    building_list = []
+locations = ["마포구", "서대문구"]
+
+def make_buidings_dict():
+    result = {}
+    zeepy = ZeepyForServerHelper()
+    response_get_building = zeepy.get_buildings()
+    building_list = json.loads(response_get_building.content)
+    for building in building_list:
+        result[building["fullNumberAddress"]] = building["id"]
+    return result
+
+def upload_json_data_in_one_directory(directory, filename, building_dict):
+    building_deal_list = []
 
     print(f"json_data_add_location3/{directory}/{filename}")
 
@@ -24,8 +36,18 @@ def upload_json_data_in_one_directory(directory, filename):
     json_data_list = json.load(f)
     building_type = ""
 
+    ## 위치 선정 START
+    is_valid = False
+    for location in locations:
+        if location in filename:
+            is_valid = True
+            break
+    if is_valid == False:
+        return []
+    ## 위치 선정 END
+
     if "다가구" in filename:
-        return
+        return []
 
     if "오피스텔" in filename:
         building_type = "OFFICETEL"
@@ -115,8 +137,9 @@ def upload_json_data_in_one_directory(directory, filename):
         short_road_address = short_road_address.replace("  ", " ")
         full_number_address = full_number_address.replace("  ", " ")
         short_number_address = short_number_address.replace("  ", " ")
-
+        
         building_data = {
+            'buildingId' : building_dict[full_number_address],
             'buildYear' : build_year,
             'apartmentName' : apartmentName,
             'shortAddress' : shortAddress,
@@ -129,17 +152,24 @@ def upload_json_data_in_one_directory(directory, filename):
             'latitude' : latitude,
             'longitude' : longitude,
             'buildingType' : building_type,
+            'dealDate' : deal_date,
+            'deposit' : deposit,
+            'monthlyRent' : monthly_rent,
+            'dealCost' : 0,
+            'floor' : floor
         }
 
-        building_list.append(building_data)
+        building_deal_list.append(building_data)
 
-    return building_list
+    return building_deal_list
         
 
-def bulk_building_in_directory_json_data():
+def bulk_building_deal_in_directory_json_data():
     zeepy = ZeepyForServerHelper()
     directoies_about_molit_json = os.listdir("json_data_add_location3")
-    building_list = []
+    building_deal_list = []
+    building_dict = make_buidings_dict()
+
     for directory in directoies_about_molit_json:
         print(directory)
 
@@ -149,13 +179,13 @@ def bulk_building_in_directory_json_data():
         molit_jsons_name = os.listdir(f"json_data_add_location3/{directory}")
 
         for molit_json_name in molit_jsons_name:
-            building_list += upload_json_data_in_one_directory(directory, molit_json_name)
+            building_deal_list += upload_json_data_in_one_directory(directory, molit_json_name, building_dict)
     
-    response_batch_insert_building = zeepy.batch_insert_building(building_list)
+    response_batch_insert_building = zeepy.batch_insert_building_deal(building_deal_list)
     response_batch_insert_building.close()
 
 def main(): # 매인 함수
-    bulk_building_in_directory_json_data()
+    bulk_building_deal_in_directory_json_data()
     
 if __name__ == "__main__":
 	main()
