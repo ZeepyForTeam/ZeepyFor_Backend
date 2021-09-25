@@ -9,14 +9,18 @@ import json
 
 class MolitExecuter:
     def __init__(self):
+        # API 호출 시 시작 날짜
         self.start_year = 2021
         self.start_month = 5
+        # API 호출 시 끝낼 날짜
         self.end_year = 2021
         self.end_month = 9
+        # API 호출 종류
         self.apartment = False
         self.officetels = True
         self.family = False
         self.alliance = True
+        # JSON 저장 디렉토리 설정
         self.directory = "json_data_2021_05"
 
     def is_pass_my_date_to_current_date(self, my_date_year, my_date_month, current_date_year, current_date_month): # 현재 날짜 비교 함수

@@ -1,11 +1,10 @@
  #-*- coding: utf-8 -*- 
 from helper.kakao_geocoder_api import KakaoGeocoderApi # GEOCODER API 클래스
-
 from datetime import datetime
 import os
 import json
 
-def edit_molit_json_use_geocoder_api(directory, filename):
+def edit_molit_json_use_geocoder_api(directory, filename, cache_address_map, count):
     if "다가구" in filename:
         return
 
@@ -42,31 +41,56 @@ def edit_molit_json_use_geocoder_api(directory, filename):
             # if "다가구" in filename:
             #     location_string = f"{sie} {json_data['dong']} {json_data['jibun']}"
             location_string = f"{sie} {dong} {jibun} {apart}"
+        
+        if location_string in cache_address_map:
+            # 캐시 맵에 데이터가 있는 경우
+            location = cache_address_map[location_string]
+            json_data["latitude"] = location["latitude"]
+            json_data["longitude"] = location["longitude"]
+            json_data["full_address"] = location["full_address"]
+            json_data["kakao"] = False
+        else:
+            # 캐시 맵에 데이터가 없는 경우
+            # 카카오 API 호출
+            count += 1
+            print(count)
 
-        if location_string != before_location_string:
             response = geocoder.get_kakao_geocoder_api_address_to_location(location_string)
             location = False
+            
             try :
-                location = response["response"]["documents"]
+                location = response["documents"]
             except :
                 print(f"error: ${location_string}")
                 
             before_location_string = location_string
         
-        if location == False:
-            continue
-        if len(location) == 0:
-            continue
+            if location == False:
+                continue
+            if len(location) == 0:
+                continue
+            # 데이터 삽입
+            if location[0]["road_address"] != None:
+                json_data["latitude"] = location[0]["y"]
+                json_data["longitude"] = location[0]["x"]
+                json_data["full_address"] = location[0]["road_address"]["address_name"]
+            else:
+                json_data["latitude"] = location[0]["y"]
+                json_data["longitude"] = location[0]["x"]
+                json_data["full_address"] = ""
 
-        json_data["latitude"] = location[0]["road_address"]["y"]
-        json_data["longitude"] = location[0]["road_address"]["x"]
-        json_data["full_address"] = location[0]["road_address"]["address_name"]
-        json_data["kakao"] = True
-        json_data["etc"] = location
+            json_data["kakao"] = True
+            json_data["etc"] = location
+            # 캐시 맵 생신
+            cache_address_map[location_string] = {}
+            cache_address_map[location_string]["latitude"] = json_data["latitude"]
+            cache_address_map[location_string]["longitude"] = json_data["longitude"] 
+            cache_address_map[location_string]["full_address"] = json_data["full_address"]
 
     f = open(f"json_data_add_location3/{directory}/{filename}", "w", encoding="UTF8")
     f.write(json.dumps(json_data_list, indent=2, ensure_ascii=False))
     f.close()
+    return count
 
 def make_cache_address_map():
     print("#### Start Make Cache Map Address ####")
@@ -74,8 +98,10 @@ def make_cache_address_map():
 
     directoies_about_molit_json = os.listdir("json_data_add_location2")
     for directory in directoies_about_molit_json:
-        print(directory)
         molit_jsons_name = os.listdir(f"json_data_add_location2/{directory}")
+
+        if directory == "error":
+            break
 
         for molit_json_name in molit_jsons_name:
             if "다가구" in molit_json_name:
@@ -112,19 +138,21 @@ def make_cache_address_map():
     return cache_address_map
 
 def edit_molit_json_add_location_data_used_kakao_geocoder_api_and_save_files(): # GEOCODER API 사용 함수
+    count = 0
     cache_address_map = make_cache_address_map()
-    print(cache_address_map)
-    # directoies_about_molit_json = os.listdir("json_data_add_location2")
-    # for directory in directoies_about_molit_json:
-    #     print(directory)
+    directoies_about_molit_json = os.listdir("json_data_add_location2")
+    for directory in directoies_about_molit_json:
+        print(directory)
+        if directory == "error":
+            break
 
-    #     if os.path.isdir(f"json_data_add_location3/{directory}") == False: # 디렉토리 체크
-    #         os.mkdir(f"json_data_add_location3/{directory}")
+        if os.path.isdir(f"json_data_add_location3/{directory}") == False: # 디렉토리 체크
+            os.mkdir(f"json_data_add_location3/{directory}")
 
-    #     molit_jsons_name = os.listdir(f"json_data_add_location2/{directory}")
+        molit_jsons_name = os.listdir(f"json_data_add_location2/{directory}")
 
-    #     for molit_json_name in molit_jsons_name:
-    #         edit_molit_json_use_geocoder_api(directory, molit_json_name)
+        for molit_json_name in molit_jsons_name:
+            count = edit_molit_json_use_geocoder_api(directory, molit_json_name, cache_address_map, count)
 
 def main(): # 매인 함수
     edit_molit_json_add_location_data_used_kakao_geocoder_api_and_save_files()
