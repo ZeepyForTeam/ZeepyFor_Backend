@@ -15,3 +15,11 @@ class Settings:
     @staticmethod
     def return_kakao_api_key():
         return os.getenv('KAKAO_API_KEY')
+
+    @staticmethod
+    def return_jwt_secret_token():
+        return os.getenv('JWT_SECRET_TOKEN')
+
+    @staticmethod
+    def return_jwt_access_token_expires():
+        return os.getenv('JWT_ACCESS_TOKEN_EXPIRES')

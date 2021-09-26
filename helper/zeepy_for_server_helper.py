@@ -5,9 +5,9 @@ import json
 
 class ZeepyForServerHelper:
     def __init__(self):
-        # self.zeepy_for_server_url = "http://13.125.168.182:8080"
-        self.token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eDY0ODZAZ21haWwuY29tIiwiaWF0IjoxNjMyNDYxNDIyLCJleHAiOjE2MzI1NDc4MjJ9.j8sW5oX1pUUJXPxQNJo0FUiAOLVl9iYz6CdN8sSpJIY"
-        self.zeepy_for_server_url = "http://localhost:8080"
+        self.zeepy_for_server_url = "http://13.125.168.182:8080"
+        self.token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eDY0ODZAZ21haWwuY29tIiwiaWF0IjoxNjMyNjU2MDk4LCJleHAiOjE2MzI3NDI0OTh9.yGmrVpFXUpgCDIjZrtrczii7dGaopkanwHHCOh4RHZw"
+        # self.zeepy_for_server_url = "http://localhost:8080"
 
     def upload_building(self, data):
         url = self.zeepy_for_server_url + "/api/buildings"

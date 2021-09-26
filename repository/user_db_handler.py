@@ -2,12 +2,12 @@
 from pymongo import MongoClient
 from pymongo.cursor import CursorType
 
-class AreaCodeDBHandler:
+class UserDBHandler:
     def __init__(self):
         host = "localhost"
         port = "27017"
         self.db_name = "zeepy_db"
-        self.collection_name = "area"
+        self.collection_name = "user"
         self.client = MongoClient(host, int(port))[self.db_name][self.collection_name]
 
     def insert_item_one(self, data):

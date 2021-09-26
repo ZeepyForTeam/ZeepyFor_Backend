@@ -1,21 +1,25 @@
  #-*- coding: utf-8 -*- 
 from flask_restful import Resource, reqparse
 from building.service.building_service import BuildingService
+from flask_jwt_extended import jwt_required
 
 class Building(Resource):
     def __init__(self):
         self.building_service = BuildingService()
 
     # 현재 저장되어 있는 빌딩 관련 정보 반환 
+    @jwt_required()
     def get(self):
         return self.building_service.get_all()
 
     # 빌딩 단일 업로드
+    @jwt_required()
     def post(self):
         args = self.__make_post_arg()
         return self.building_service.create(args)
 
     #빌딩 단일 삭제
+    @jwt_required()
     def delete(self):
         args = self.__make_delete_arg()
         return self.building_service.delete_by_id(args)

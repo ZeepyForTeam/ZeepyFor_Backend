@@ -1,18 +1,22 @@
  #-*- coding: utf-8 -*- 
 from flask_restful import Resource, reqparse
 from areacode.service.area_code_service import AreaCodeService
+from flask_jwt_extended import jwt_required
 
 class AreaCode(Resource):
     def __init__(self):
         self.area_code_service = AreaCodeService()
 
+    @jwt_required()
     def get(self):
         return self.area_code_service.get_all()
 
+    @jwt_required()
     def post(self):
         args = self.make_post_arg()
         return self.area_code_service.create(args)
-    
+
+    @jwt_required()
     def delete(self, id):
         args = self.make_delete_arg()
         return self.area_code_service.delete_by_id(args)

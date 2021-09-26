@@ -19,7 +19,7 @@ class BuildingService:
         _id = self.building_repository.insert_item_one(args)
         response = jsonify()
         response.status_code = 201
-        response.headers['location'] = f"/api/building/{str(_id)}"
+        response.headers['location'] = f"/api/buildings/{str(_id)}"
         response.autocorrect_location_header = False
         return response
     
