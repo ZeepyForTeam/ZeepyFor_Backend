@@ -25,6 +25,16 @@ class BuildingDBHandler:
     def find_item(self, condition=None):
         result = self.client.find(condition, no_cursor_timeout=True, cursor_type=CursorType.EXHAUST)
         return result
+    
+    def find_item_pagenate(self, page, condition=None):
+        limit = 50
+        offset = (page - 1) * limit
+        result = self.client.find(condition, no_cursor_timeout=True, cursor_type=CursorType.NON_TAILABLE).limit(limit).skip(offset)
+        return result
+    
+    def count_items(self, condition=None):
+        result = self.client.find(condition, no_cursor_timeout=True, cursor_type=CursorType.EXHAUST)
+        return result.count()
 
     def delete_item_one(self, condition=None):
         result = self.client.delete_one(condition)

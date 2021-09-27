@@ -10,10 +10,10 @@ class Building(Resource):
     # 현재 저장되어 있는 빌딩 관련 정보 반환 
     @jwt_required()
     def get(self):
-        return self.building_service.get_all()
+        args = self.__make_get_arg()
+        return self.building_service.get_pagenate(args)
 
     # 빌딩 단일 업로드
-    @jwt_required()
     def post(self):
         args = self.__make_post_arg()
         return self.building_service.create(args)
@@ -48,10 +48,13 @@ class Building(Resource):
         parser.add_argument('longitude', type=float, required=False)
         parser.add_argument('full_address', type=str, required=False)
         parser.add_argument('type', type=str, required=True)
+        parser.add_argument('kakao', type=bool, required=False)
+        parser.add_argument('etc', type=list, required=False)
         return parser.parse_args()
 
     def __make_get_arg(self):
         parser = reqparse.RequestParser()
+        parser.add_argument('page', type=int, required=True)
         return parser.parse_args()
 
     def __make_delete_arg(self):

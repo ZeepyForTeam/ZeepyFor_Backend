@@ -4,6 +4,7 @@ from flask_restful import Api, Resource
 from user.controller.user import User
 from auth.controller.auth import Auth
 from building.controller.building import Building
+from building.controller.building_batch import BuildingBatch
 from areacode.controller.area_code import AreaCode
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
@@ -18,6 +19,7 @@ api = Api(app)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 api.add_resource(Building, '/api/buildings')
+api.add_resource(BuildingBatch, '/api/buildings/batch')
 api.add_resource(AreaCode, '/api/codes')
 api.add_resource(User, '/api/users')
 api.add_resource(Auth, '/api/auth')
